@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import Stripe from "stripe";
 
 import { getStripeWebhookSecret } from "@/lib/env";
@@ -44,7 +45,8 @@ export async function POST(request: Request) {
       return new Response("Missing booking metadata.", { status: 400 });
     }
 
-    const booking = await prisma.$transaction(async (transaction) => {
+    const booking = await prisma.$transaction(
+      async (transaction: Prisma.TransactionClient) => {
       const updatedBooking = await transaction.booking.update({
         where: { id: bookingId },
         data: {
@@ -85,7 +87,8 @@ export async function POST(request: Request) {
       }
 
       return updatedBooking;
-    });
+      },
+    );
 
     try {
       await sendBookingWhatsAppNotification({
