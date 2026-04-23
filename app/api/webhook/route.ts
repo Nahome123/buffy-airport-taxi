@@ -87,6 +87,7 @@ export async function POST(request: Request) {
       await sendBookingWhatsAppNotification({
         bookingId: booking.id,
         customerName: booking.customerName,
+        phone: booking.phone,
         pickupAddress: booking.pickupAddress,
         dropoffAddress: booking.dropoffAddress,
         pickupTime: booking.pickupTime,
@@ -103,6 +104,7 @@ export async function POST(request: Request) {
       await sendBookingTelegramNotification({
         bookingId: booking.id,
         customerName: booking.customerName,
+        phone: booking.phone,
         pickupAddress: booking.pickupAddress,
         dropoffAddress: booking.dropoffAddress,
         pickupTime: booking.pickupTime,
