@@ -1,4 +1,3 @@
-import type { Prisma } from "@prisma/client";
 import Stripe from "stripe";
 
 import { getStripeWebhookSecret } from "@/lib/env";
@@ -45,50 +44,44 @@ export async function POST(request: Request) {
       return new Response("Missing booking metadata.", { status: 400 });
     }
 
-    const booking = await prisma.$transaction(
-      async (transaction: Prisma.TransactionClient) => {
-      const updatedBooking = await transaction.booking.update({
-        where: { id: bookingId },
+    const booking = await prisma.booking.update({
+      where: { id: bookingId },
+      data: {
+        status: "CONFIRMED",
+        stripeSessionId: session.id,
+      },
+    });
+
+    const existingPayment = paymentIntentId
+      ? await prisma.payment.findUnique({
+          where: {
+            stripePaymentId: paymentIntentId,
+          },
+        })
+      : null;
+
+    if (existingPayment) {
+      await prisma.payment.update({
+        where: {
+          id: existingPayment.id,
+        },
         data: {
-          status: "CONFIRMED",
-          stripeSessionId: session.id,
+          amount: booking.fareTotal,
+          currency: session.currency ?? "usd",
+          status: "PAID",
         },
       });
-
-      const existingPayment = paymentIntentId
-        ? await transaction.payment.findUnique({
-            where: {
-              stripePaymentId: paymentIntentId,
-            },
-          })
-        : null;
-
-      if (existingPayment) {
-        await transaction.payment.update({
-          where: {
-            id: existingPayment.id,
-          },
-          data: {
-            amount: updatedBooking.fareTotal,
-            currency: session.currency ?? "usd",
-            status: "PAID",
-          },
-        });
-      } else {
-        await transaction.payment.create({
-          data: {
-            bookingId,
-            stripePaymentId: paymentIntentId,
-            amount: updatedBooking.fareTotal,
-            currency: session.currency ?? "usd",
-            status: "PAID",
-          },
-        });
-      }
-
-      return updatedBooking;
-      },
-    );
+    } else {
+      await prisma.payment.create({
+        data: {
+          bookingId,
+          stripePaymentId: paymentIntentId,
+          amount: booking.fareTotal,
+          currency: session.currency ?? "usd",
+          status: "PAID",
+        },
+      });
+    }
 
     try {
       await sendBookingWhatsAppNotification({
