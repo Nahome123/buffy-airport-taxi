@@ -17,23 +17,7 @@ Production-style MVP for scheduling airport taxi bookings with server-side fare 
 Copy `.env.example` to `.env.local` or `.env` and fill in:
 
 ```bash
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/airport_taxi?schema=public
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=choose-a-strong-password
-ADMIN_SESSION_SECRET=generate-a-long-random-secret
-MAPBOX_ACCESS_TOKEN=pk....
-NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-TWILIO_ACCOUNT_SID=AC...
-TWILIO_AUTH_TOKEN=...
-TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
-TWILIO_WHATSAPP_TO=whatsapp:+15551234567
-TELEGRAM_BOT_TOKEN=123456789:your_bot_token
-TELEGRAM_CHAT_ID=123456789
-```
+
 
 ## Setup
 
