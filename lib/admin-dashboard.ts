@@ -52,6 +52,10 @@ export type AdminDashboardData = {
   drivers: RawDriver[];
 };
 
+type BookingWithoutDriver = RawBooking & {
+  payments: RawPayment[];
+};
+
 async function hasTable(tableName: string) {
   const rows = await prisma.$queryRaw<Array<{ exists: boolean }>>`
     SELECT EXISTS (
@@ -108,7 +112,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
             createdAt: "desc",
           },
         })
-      ).map((booking) => ({
+      ).map((booking: BookingWithoutDriver) => ({
         ...booking,
         assignedDriverId: null,
         assignedAt: null,
