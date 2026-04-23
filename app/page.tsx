@@ -1,65 +1,169 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+
+import { BookingForm } from "@/components/booking-form";
+import { CityBackground } from "@/components/city-background";
+import { SiteNav } from "@/components/site-nav";
+import { getAppUrl } from "@/lib/env";
+import { formatCurrencyFromCents } from "@/lib/format";
+
+export const metadata: Metadata = {
+  title: "Buffy Airport Taxi | Buffalo Airport Transfer Scheduler",
+  description:
+    "Schedule Buffalo airport taxi rides with live mileage pricing, Niagara Falls transfer support, card or cash checkout, and private dispatch management.",
+  keywords: [
+    "Buffalo airport taxi service",
+    "airport shuttle Buffalo NY",
+    "Buffalo to Niagara Falls taxi",
+    "BUF airport pickup",
+    "Buffalo airport car service",
+  ],
+};
+
+const pricingExamples = [
+  { label: "Base fee", value: 1000 },
+  { label: "10 mile sample", value: 3000 },
+  { label: "25 mile sample", value: 6000 },
+];
+
+const aboutCards = [
+  {
+    title: "Local airport focus",
+    copy:
+      "Buffy Airport Taxi is positioned as a simple local transfer service for airport pickups, drop-offs, and scheduled rides across Buffalo and the surrounding area.",
+  },
+  {
+    title: "Straightforward booking",
+    copy:
+      "The experience is designed to feel direct and low-friction: riders enter the trip details, review pricing, and continue to secure checkout without extra steps.",
+  },
+  {
+    title: "Dispatch-ready workflow",
+    copy:
+      "Behind the scenes, the booking flow is built to support private admin access, payment confirmation, and future trip assignment as the service grows.",
+  },
+];
 
 export default function Home() {
+  const appUrl = getAppUrl();
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "TaxiService",
+    name: "Buffy Airport Taxi",
+    areaServed: ["Buffalo, NY", "Niagara Falls, NY"],
+    serviceType: "Airport transportation",
+    url: appUrl,
+    description:
+      "Airport-focused taxi booking for Buffalo and Niagara Falls with route-based pricing and flexible payment options.",
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="relative min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(localBusinessSchema),
+        }}
+      />
+      <CityBackground />
+
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8 sm:px-10 lg:px-12">
+        <SiteNav currentPath="/" accentLabel="Buffalo Airport Booking" />
+
+        <section className="grid flex-1 gap-8 py-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-stretch">
+          <div className="animate-rise flex h-full flex-col gap-6">
+            <div className="buffalo-glow flex h-full flex-col justify-between rounded-[2.35rem] border border-white/10 bg-[linear-gradient(145deg,rgba(10,18,27,0.54),rgba(26,48,69,0.34),rgba(135,59,32,0.18))] p-8 backdrop-blur-md sm:p-10">
+              <div>
+                <span className="inline-flex rounded-full border border-[color:var(--color-gold)]/40 bg-black/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--color-gold)]">
+                  Buffalo Private Transfer
+                </span>
+                <p className="hero-overline mt-8 text-[11px] font-semibold uppercase tracking-[0.42em] text-slate-200/76">
+                  Direct Booking Experience
+                </p>
+                <h1 className="hero-headline mt-4 max-w-xl text-white">
+                  <span className="block">Buffy</span>
+                  <span className="block text-[color:var(--color-gold)]">
+                    Airport Taxi
+                  </span>
+                </h1>
+                <p className="mt-6 max-w-lg text-base leading-7 text-slate-200 sm:text-lg">
+                  Book airport rides with live route pricing, quick checkout,
+                  and a cleaner dispatch workflow built to feel local and
+                  premium at the same time.
+                </p>
+              </div>
+
+              <div className="hero-copy-panel mt-8 rounded-[1.8rem] border border-white/10 bg-black/18 p-5">
+                <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--color-gold)]">
+                  Service Snapshot
+                </p>
+                <p className="mt-3 text-sm leading-7 text-slate-100/88">
+                  Route-based pricing, airport-focused bookings, and a private
+                  admin flow designed for real dispatch use once the service is
+                  live.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {pricingExamples.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[1.6rem] border border-white/10 bg-black/20 px-4 py-4 text-white/92 backdrop-blur-sm"
+                >
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--color-gold)]">
+                    {item.label}
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold">
+                    {item.label === "Base fee"
+                      ? "$10 + $2 / mile"
+                      : formatCurrencyFromCents(item.value)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="animate-rise-delay flex h-full">
+            <BookingForm />
+          </div>
+        </section>
+
+        <section className="animate-rise-delay pb-10">
+          <div className="buffalo-card rounded-[2.3rem] border border-white/10 p-6 sm:p-8">
+            <div className="flex flex-col gap-4 border-b border-white/10 pb-6 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.28em] text-[color:var(--color-gold)]">
+                  About Buffy
+                </p>
+                <h2 className="mt-3 text-3xl font-semibold text-white">
+                  A clean airport-transfer brand with room to grow
+                </h2>
+              </div>
+              <p className="max-w-2xl text-sm leading-7 text-slate-200/82">
+                This section uses intentionally generic business copy so you can
+                swap it later for your real story, service area, pricing notes,
+                and operating details once you are ready to launch publicly.
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {aboutCards.map((card) => (
+                <article
+                  key={card.title}
+                  className="rounded-[1.8rem] border border-white/10 bg-black/16 p-5 backdrop-blur-sm"
+                >
+                  <p className="text-xs uppercase tracking-[0.2em] text-[color:var(--color-gold)]">
+                    {card.title}
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-slate-100/88">
+                    {card.copy}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }

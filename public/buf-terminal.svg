@@ -1,0 +1,39 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" rx="44" fill="#12202D"/>
+  <rect x="34" y="34" width="1132" height="832" rx="32" fill="url(#panel)"/>
+  <path d="M122 635H1076V726H122V635Z" fill="#EADBC9"/>
+  <path d="M162 596H1040V635H162V596Z" fill="#CEAF8A"/>
+  <path d="M204 358H994V596H204V358Z" fill="#FAF3EA"/>
+  <path d="M246 264H952V358H246V264Z" fill="#D7B28A"/>
+  <path d="M270 216H930V264H270V216Z" fill="#9C5B38"/>
+  <path d="M353 154H847V216H353V154Z" fill="#DA7A48"/>
+  <rect x="284" y="382" width="96" height="190" fill="#BFD5E1"/>
+  <rect x="398" y="382" width="96" height="190" fill="#CFE3EA"/>
+  <rect x="512" y="382" width="96" height="190" fill="#BFD5E1"/>
+  <rect x="626" y="382" width="96" height="190" fill="#CFE3EA"/>
+  <rect x="740" y="382" width="96" height="190" fill="#BFD5E1"/>
+  <rect x="854" y="382" width="60" height="190" fill="#CFE3EA"/>
+  <path d="M246 274L298 322H902L952 274H246Z" fill="#C56A39"/>
+  <path d="M96 726H1108V812H96V726Z" fill="#293A48"/>
+  <path d="M214 705H318V757H214V705Z" fill="#182734"/>
+  <path d="M214 705H318V717H214V705Z" fill="#D3A157"/>
+  <path d="M344 705H448V757H344V705Z" fill="#182734"/>
+  <path d="M344 705H448V717H344V705Z" fill="#D3A157"/>
+  <path d="M752 705H986V757H752V705Z" fill="#182734"/>
+  <path d="M752 705H986V717H752V705Z" fill="#D3A157"/>
+  <circle cx="248" cy="670" r="18" fill="#151F29"/>
+  <circle cx="326" cy="670" r="18" fill="#151F29"/>
+  <path d="M195 636L221 602H321L357 636H195Z" fill="#A24624"/>
+  <path d="M790 648C790 617.072 815.072 592 846 592H934C964.928 592 990 617.072 990 648V705H790V648Z" fill="#A24624"/>
+  <path d="M846 592L905 548H951L914 592H846Z" fill="#D57C45"/>
+  <path d="M151 187H377" stroke="#F1C48F" stroke-width="10" stroke-linecap="round"/>
+  <path d="M856 162H1024" stroke="#F1C48F" stroke-width="10" stroke-linecap="round"/>
+  <text x="600" y="136" text-anchor="middle" fill="#F6E6D2" font-family="Arial, sans-serif" font-size="46" font-weight="700" letter-spacing="6">BUF ARRIVALS</text>
+  <defs>
+    <linearGradient id="panel" x1="600" y1="34" x2="600" y2="866" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#20384B"/>
+      <stop offset="0.5" stop-color="#2C4961"/>
+      <stop offset="1" stop-color="#94553A"/>
+    </linearGradient>
+  </defs>
+</svg>

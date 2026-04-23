@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  customerName    String
+  email           String
+  phone           String
+  pickupAddress   String
+  dropoffAddress  String
+  pickupTime      DateTime
+  passengers      Int
+  luggage         Int
+  fareTotal       Int
+  status          BookingStatus @default(PENDING_PAYMENT)
+  stripeSessionId String?       @unique
+  assignedDriverId String?
+  assignedAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  payments       Payment[]
+  assignedDriver Driver?  @relation(fields: [assignedDriverId], references: [id], onDelete: SetNull)
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  bookingId       String
+  stripePaymentId String?       @unique
+  amount          Int
+  currency        String        @default("usd")
+  status          PaymentStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model Driver {
+  id           String    @id @default(cuid())
+  name         String
+  phone        String?
+  vehicleLabel String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  bookings Booking[]
+}
