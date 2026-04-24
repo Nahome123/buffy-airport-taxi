@@ -38,6 +38,10 @@ export function getGoogleAnalyticsMeasurementId() {
   return process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || null;
 }
 
+export function getGoogleAdsMeasurementId() {
+  return process.env.NEXT_PUBLIC_GOOGLE_ADS_ID?.trim() || null;
+}
+
 export function getTwilioAccountSid() {
   return process.env.TWILIO_ACCOUNT_SID?.trim() || null;
 }

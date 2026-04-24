@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@/components/google-analytics";
-import { getAppUrl, getGoogleAnalyticsMeasurementId } from "@/lib/env";
+import {
+  getAppUrl,
+  getGoogleAdsMeasurementId,
+  getGoogleAnalyticsMeasurementId,
+} from "@/lib/env";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -69,6 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const gaMeasurementId = getGoogleAnalyticsMeasurementId();
+  const googleAdsMeasurementId = getGoogleAdsMeasurementId();
 
   return (
     <html
@@ -77,7 +82,14 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-[var(--color-ink)] text-[var(--color-paper)]">
         {gaMeasurementId ? (
-          <GoogleAnalytics measurementId={gaMeasurementId} />
+          <GoogleAnalytics
+            measurementId={gaMeasurementId}
+            additionalMeasurementIds={
+              googleAdsMeasurementId ? [googleAdsMeasurementId] : []
+            }
+          />
+        ) : googleAdsMeasurementId ? (
+          <GoogleAnalytics measurementId={googleAdsMeasurementId} />
         ) : null}
         {children}
       </body>

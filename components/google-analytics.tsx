@@ -13,9 +13,13 @@ declare global {
 
 type GoogleAnalyticsProps = {
   measurementId: string;
+  additionalMeasurementIds?: string[];
 };
 
-export function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
+export function GoogleAnalytics({
+  measurementId,
+  additionalMeasurementIds = [],
+}: GoogleAnalyticsProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -24,13 +28,16 @@ export function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
       return;
     }
 
+    const allMeasurementIds = [measurementId, ...additionalMeasurementIds];
     const queryString = searchParams.toString();
     const pagePath = queryString ? `${pathname}?${queryString}` : pathname;
 
-    window.gtag("config", measurementId, {
-      page_path: pagePath,
+    allMeasurementIds.forEach((id) => {
+      window.gtag?.("config", id, {
+        page_path: pagePath,
+      });
     });
-  }, [measurementId, pathname, searchParams]);
+  }, [measurementId, additionalMeasurementIds, pathname, searchParams]);
 
   return (
     <>
@@ -45,6 +52,9 @@ export function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps) {
           window.gtag = gtag;
           gtag('js', new Date());
           gtag('config', '${measurementId}');
+          ${additionalMeasurementIds
+            .map((id) => `gtag('config', '${id}');`)
+            .join("\n")}
         `}
       </Script>
     </>
