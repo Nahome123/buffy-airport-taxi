@@ -4,7 +4,6 @@ import { BookingForm } from "@/components/booking-form";
 import { CityBackground } from "@/components/city-background";
 import { SiteNav } from "@/components/site-nav";
 import { getAppUrl } from "@/lib/env";
-import { formatCurrencyFromCents } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Buffy Airport Taxi | Buffalo Airport Transfer Scheduler",
@@ -22,10 +21,19 @@ export const metadata: Metadata = {
   },
 };
 
-const pricingExamples = [
-  { label: "Base fee", value: 1000 },
-  { label: "10 mile sample", value: 3000 },
-  { label: "25 mile sample", value: 6000 },
+const pricingHighlights = [
+  {
+    label: "Initiation fee",
+    value: "$5",
+  },
+  {
+    label: "Pricing approach",
+    value: "Fair pricing",
+  },
+  {
+    label: "Booking style",
+    value: "Private rides",
+  },
 ];
 
 const serviceCards = [
@@ -130,7 +138,7 @@ export default function Home() {
         name: "How is pricing calculated?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Pricing is based on route mileage and currently starts with a $10 base fee plus $2 per mile.",
+          text: "Trips include a $5 initiation fee and are quoted with fair pricing based on the ride details.",
         },
       },
       {
@@ -172,7 +180,7 @@ export default function Home() {
         <SiteNav currentPath="/" accentLabel="Buffalo Airport Booking" />
 
         <section className="grid flex-1 gap-8 py-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-stretch">
-          <div className="animate-rise flex h-full flex-col gap-6">
+          <div className="order-2 animate-rise flex h-full flex-col gap-6 lg:order-1">
             <div className="buffalo-glow flex h-full flex-col justify-between rounded-[2.35rem] border border-white/10 bg-[linear-gradient(145deg,rgba(10,18,27,0.54),rgba(26,48,69,0.34),rgba(135,59,32,0.18))] p-8 backdrop-blur-md sm:p-10">
               <div>
                 <span className="inline-flex rounded-full border border-[color:var(--color-gold)]/40 bg-black/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--color-gold)]">
@@ -207,7 +215,7 @@ export default function Home() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
-              {pricingExamples.map((item) => (
+              {pricingHighlights.map((item) => (
                 <div
                   key={item.label}
                   className="rounded-[1.6rem] border border-white/10 bg-black/20 px-4 py-4 text-white/92 backdrop-blur-sm"
@@ -215,17 +223,13 @@ export default function Home() {
                   <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--color-gold)]">
                     {item.label}
                   </p>
-                  <p className="mt-2 text-2xl font-semibold">
-                    {item.label === "Base fee"
-                      ? "$10 + $2 / mile"
-                      : formatCurrencyFromCents(item.value)}
-                  </p>
+                  <p className="mt-2 text-2xl font-semibold">{item.value}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="animate-rise-delay flex h-full">
+          <div className="order-1 animate-rise-delay flex h-full lg:order-2">
             <BookingForm />
           </div>
         </section>
