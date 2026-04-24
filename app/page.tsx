@@ -198,11 +198,6 @@ export default function Home() {
                   A clean airport-transfer brand with room to grow
                 </h2>
               </div>
-              <p className="max-w-2xl text-sm leading-7 text-slate-200/82">
-                This section uses intentionally generic business copy so you can
-                swap it later for your real story, service area, pricing notes,
-                and operating details once you are ready to launch publicly.
-              </p>
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
