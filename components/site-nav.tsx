@@ -7,6 +7,7 @@ type SiteNavProps = {
 
 const navItems = [
   { href: "/", label: "Book Ride" },
+  { href: "/lookup", label: "Find Booking" },
   { href: "/admin/login", label: "Admin Login" },
   { href: "/admin", label: "Dispatch Board" },
 ];

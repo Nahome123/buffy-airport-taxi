@@ -57,6 +57,14 @@ export default async function SuccessPage({
           >
             Book Another Ride
           </Link>
+          {bookingId ? (
+            <Link
+              href={`/lookup?reference=${encodeURIComponent(bookingId)}`}
+              className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Track This Booking
+            </Link>
+          ) : null}
           <Link
             href="/admin"
             className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
