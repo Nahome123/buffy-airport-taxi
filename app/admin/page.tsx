@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -7,6 +8,13 @@ import { formatCurrencyFromCents, formatPickupDate } from "@/lib/format";
 import { requireAdminSession } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Dispatch Board",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 const buffaloImageUrl =
   "https://commons.wikimedia.org/wiki/Special:FilePath/Niagara_Square%2C_Buffalo%2C_NY_01.jpg";

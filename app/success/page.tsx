@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SiteNav } from "@/components/site-nav";
+
+export const metadata: Metadata = {
+  title: "Booking Confirmed",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function SuccessPage({
   searchParams,

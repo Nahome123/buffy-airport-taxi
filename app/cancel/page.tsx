@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SiteNav } from "@/components/site-nav";
+
+export const metadata: Metadata = {
+  title: "Checkout Paused",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function CancelPage({
   searchParams,

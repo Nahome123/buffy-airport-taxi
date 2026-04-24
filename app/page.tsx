@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     "BUF airport pickup",
     "Buffalo airport car service",
   ],
+  alternates: {
+    canonical: "/",
+  },
 };
 
 const pricingExamples = [
@@ -48,12 +51,62 @@ export default function Home() {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "TaxiService",
+    "@id": `${appUrl}/#business`,
     name: "Buffy Airport Taxi",
+    url: appUrl,
+    image: `${appUrl}/opengraph-image`,
     areaServed: ["Buffalo, NY", "Niagara Falls, NY"],
     serviceType: "Airport transportation",
-    url: appUrl,
     description:
       "Airport-focused taxi booking for Buffalo and Niagara Falls with route-based pricing and flexible payment options.",
+    priceRange: "$$",
+    availableLanguage: ["English"],
+    makesOffer: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Buffalo airport transfer",
+        },
+      },
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "Niagara Falls transfer",
+        },
+      },
+    ],
+  };
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How is pricing calculated?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Pricing is based on route mileage and currently starts with a $10 base fee plus $2 per mile.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can riders pay with cash?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. Riders can choose secure online card checkout or reserve the trip and pay cash later.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Does the service cover Niagara Falls?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. The booking flow is designed for Buffalo airport transportation and Niagara Falls transfer routes.",
+        },
+      },
+    ],
   };
 
   return (
@@ -62,6 +115,12 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(localBusinessSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema),
         }}
       />
       <CityBackground />
