@@ -97,6 +97,22 @@ after a cash booking is created.
 
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_CHAT_ID`
+- `TELEGRAM_WEBHOOK_SECRET` (optional but recommended for Telegram callback security)
+
+### Telegram approval flow
+
+You can route bookings through Telegram approval before payment:
+
+- Riders submit the booking form and are sent to an approval waiting page
+- The bot sends approve/reject buttons into your Telegram chat
+- Approving a card booking unlocks Stripe Checkout
+- Approving a cash booking confirms it directly
+
+To receive Telegram callback button presses, point the bot webhook to:
+
+```bash
+https://www.buffytaxi.com/api/telegram/webhook
+```
 
 ## Stripe Local Webhook Forwarding
 

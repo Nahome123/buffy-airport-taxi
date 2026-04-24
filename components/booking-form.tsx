@@ -441,11 +441,11 @@ export function BookingForm() {
             Reserve Your Ride
           </p>
           <h2 className="mt-3 text-2xl font-semibold text-[var(--color-copy)]">
-            Buffalo pickup planning, dressed up for checkout
+            Buffalo pickup planning with dispatcher approval built in
           </h2>
           <p className="mt-3 max-w-lg text-sm leading-6 text-[var(--color-copy-muted)]">
             Share the rider details and we will route the booking into a clean
-            Stripe checkout flow with server-side fare pricing.
+            approval flow before payment or cash confirmation moves forward.
           </p>
         </div>
         <div className="rounded-[1.5rem] border border-[#ecd8c5] bg-[linear-gradient(180deg,#fff7ed,#f5e4d7)] px-4 py-3 text-right">
@@ -571,10 +571,11 @@ export function BookingForm() {
                 Card Checkout
               </p>
               <p className="mt-2 text-base font-semibold text-[var(--color-copy)]">
-                Pay online with Stripe
+                Pay online with Stripe after approval
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--color-copy-muted)]">
-                Continue to secure checkout and pay before the ride is dispatched.
+                The dispatcher approves the trip first, then the rider continues
+                into secure checkout.
               </p>
             </label>
 
@@ -599,10 +600,11 @@ export function BookingForm() {
                 Cash Booking
               </p>
               <p className="mt-2 text-base font-semibold text-[var(--color-copy)]">
-                Reserve now, pay in cash later
+                Reserve now, confirm cash after approval
               </p>
               <p className="mt-2 text-sm leading-6 text-[var(--color-copy-muted)]">
-                Confirm the trip now and collect payment at pickup or dropoff.
+                The dispatcher approves the ride first, then the trip is
+                confirmed with cash still due at pickup or dropoff.
               </p>
             </label>
           </div>
@@ -833,9 +835,10 @@ export function BookingForm() {
               Fare Logic
             </p>
             <p className="mt-2 leading-6">
-              Server pricing now uses route distance. Once both addresses are
+              Server pricing uses route distance. Once both addresses are
               entered, the estimate uses live driving mileage, charges $2.00
-              per mile, and adds a $10.00 initial fee.
+              per mile, adds a $10.00 initial fee, and then waits for dispatch
+              approval before the next step opens.
             </p>
           </div>
           <div className="rounded-[1.4rem] border border-white/60 bg-white/60 p-4">
@@ -844,23 +847,17 @@ export function BookingForm() {
             </p>
             <p className="mt-2 leading-6">
               {formValues.paymentMethod === "cash"
-                ? "Cash bookings skip Stripe, confirm the ride immediately, and land in the dispatch board with payment still due."
-                : "Card bookings continue through Stripe Checkout so the fare is collected before dispatch."}
+                ? "Cash bookings wait for Telegram approval first, then confirm the ride with payment still due."
+                : "Card bookings wait for approval first, then continue through Stripe Checkout once the dispatcher approves them."}
             </p>
           </div>
         </div>
 
         <SubmitButton
-          idleLabel={
-            formValues.paymentMethod === "cash"
-              ? "Confirm Cash Booking"
-              : "Continue To Secure Checkout"
-          }
+          idleLabel="Send Trip For Approval"
           pendingLabel={
             isPending
-              ? formValues.paymentMethod === "cash"
-                ? "Confirming booking..."
-                : "Preparing checkout..."
+              ? "Sending for approval..."
               : "Submitting..."
           }
         />

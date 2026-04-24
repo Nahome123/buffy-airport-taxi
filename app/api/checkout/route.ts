@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { getAppUrl } from "@/lib/env";
-import {
-  sendBookingTelegramLeadNotification,
-  sendBookingTelegramNotification,
-  sendBookingWhatsAppNotification,
-} from "@/lib/notifications";
+import { sendBookingTelegramApprovalRequest } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { getMileageEstimate } from "@/lib/routing";
-import { getStripeClient } from "@/lib/stripe";
 import { bookingPayloadSchema } from "@/lib/validations/booking";
 
 export const runtime = "nodejs";
@@ -46,43 +41,15 @@ export async function POST(request: Request) {
         passengers: payload.passengers,
         luggage: payload.luggage,
         fareTotal,
-        status:
-          payload.paymentMethod === "cash" ? "CONFIRMED" : "PENDING_PAYMENT",
+        status: "AWAITING_APPROVAL",
+        paymentMethod: payload.paymentMethod === "cash" ? "CASH" : "CARD",
       },
     });
 
     const appUrl = getAppUrl();
 
-    if (payload.paymentMethod === "card") {
-      try {
-        await sendBookingTelegramLeadNotification({
-          bookingId: booking.id,
-          customerName: booking.customerName,
-          phone: payload.phone,
-          pickupAddress: booking.pickupAddress,
-          dropoffAddress: booking.dropoffAddress,
-          pickupTime: booking.pickupTime,
-          passengers: booking.passengers,
-          luggage: booking.luggage,
-          fareTotal: booking.fareTotal,
-          paymentLabel: "Checkout started, payment not yet completed",
-        });
-      } catch (error) {
-        console.error("Telegram lead notification failed", error);
-      }
-    }
-
-    if (payload.paymentMethod === "cash") {
-      await prisma.payment.create({
-        data: {
-          bookingId: booking.id,
-          amount: fareTotal,
-          currency: "usd",
-          status: "PENDING",
-        },
-      });
-
-      const notificationPayload = {
+    try {
+      await sendBookingTelegramApprovalRequest({
         bookingId: booking.id,
         customerName: booking.customerName,
         phone: payload.phone,
@@ -92,62 +59,18 @@ export async function POST(request: Request) {
         passengers: booking.passengers,
         luggage: booking.luggage,
         fareTotal: booking.fareTotal,
-        paymentLabel: "Cash due at pickup",
-      };
-
-      try {
-        await sendBookingWhatsAppNotification(notificationPayload);
-      } catch (error) {
-        console.error("WhatsApp notification failed", error);
-      }
-
-      try {
-        await sendBookingTelegramNotification(notificationPayload);
-      } catch (error) {
-        console.error("Telegram notification failed", error);
-      }
-
-      return NextResponse.json({
-        url: `${appUrl}/success?bookingId=${booking.id}&paymentMethod=cash`,
+        paymentLabel:
+          payload.paymentMethod === "cash"
+            ? "Cash booking waiting for approval"
+            : "Card checkout waiting for approval",
       });
+    } catch (error) {
+      console.error("Telegram approval request failed", error);
     }
 
-    const session = await getStripeClient().checkout.sessions.create({
-      mode: "payment",
-      success_url: `${appUrl}/success?bookingId=${booking.id}&paymentMethod=card`,
-      cancel_url: `${appUrl}/cancel?bookingId=${booking.id}`,
-      customer_email: booking.email,
-      metadata: {
-        bookingId: booking.id,
-      },
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: "usd",
-            unit_amount: fareTotal,
-            product_data: {
-              name: "Airport taxi booking",
-              description: `${booking.pickupAddress} -> ${booking.dropoffAddress}`,
-            },
-          },
-        },
-      ],
+    return NextResponse.json({
+      url: `${appUrl}/booking/${booking.id}/pending`,
     });
-
-    await prisma.booking.update({
-      where: { id: booking.id },
-      data: { stripeSessionId: session.id },
-    });
-
-    if (!session.url) {
-      return NextResponse.json(
-        { error: "Stripe Checkout did not return a redirect URL." },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Checkout session creation failed", error);
     return NextResponse.json(

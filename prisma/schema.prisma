@@ -7,9 +7,15 @@ datasource db {
 }
 
 enum BookingStatus {
+  AWAITING_APPROVAL
   PENDING_PAYMENT
   CONFIRMED
   CANCELLED
+}
+
+enum PaymentMethod {
+  CARD
+  CASH
 }
 
 enum PaymentStatus {
@@ -31,9 +37,11 @@ model Booking {
   luggage         Int
   fareTotal       Int
   status          BookingStatus @default(PENDING_PAYMENT)
+  paymentMethod   PaymentMethod @default(CARD)
   stripeSessionId String?       @unique
   assignedDriverId String?
   assignedAt       DateTime?
+  approvalDecisionAt DateTime?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 

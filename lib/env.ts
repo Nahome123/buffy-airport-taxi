@@ -62,6 +62,10 @@ export function getTelegramChatId() {
   return process.env.TELEGRAM_CHAT_ID?.trim() || null;
 }
 
+export function getTelegramWebhookSecret() {
+  return process.env.TELEGRAM_WEBHOOK_SECRET?.trim() || null;
+}
+
 export function getMapboxAccessToken() {
   return process.env.MAPBOX_ACCESS_TOKEN?.trim() || null;
 }

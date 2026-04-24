@@ -329,6 +329,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
 function StatusBadge({ value }: { value: string }) {
   const styles: Record<string, string> = {
+    AWAITING_APPROVAL: "bg-sky-100 text-sky-700",
     CONFIRMED: "bg-emerald-100 text-emerald-700",
     PENDING_PAYMENT: "bg-amber-100 text-amber-700",
     CANCELLED: "bg-rose-100 text-rose-700",
