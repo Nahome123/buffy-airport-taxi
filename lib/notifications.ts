@@ -12,7 +12,7 @@ import {
 type BookingNotificationInput = {
   bookingId: string;
   customerName: string;
-  phone: string;
+  phone?: string | null;
   pickupAddress: string;
   dropoffAddress: string;
   pickupTime: Date | string;
@@ -21,6 +21,11 @@ type BookingNotificationInput = {
   fareTotal: number;
   paymentLabel?: string;
 };
+
+function formatPhoneLine(phone?: string | null) {
+  const normalizedPhone = phone?.trim();
+  return `Phone: ${normalizedPhone || "Not provided"}`;
+}
 
 function isWhatsAppConfigured() {
   return Boolean(
@@ -51,7 +56,7 @@ export async function sendBookingWhatsAppNotification(
     "New Buffy Airport Taxi booking confirmed.",
     `Booking: ${booking.bookingId}`,
     `Customer: ${booking.customerName}`,
-    `Phone: ${booking.phone}`,
+    formatPhoneLine(booking.phone),
     `Pickup: ${booking.pickupAddress}`,
     `Dropoff: ${booking.dropoffAddress}`,
     `Time: ${new Date(booking.pickupTime).toLocaleString("en-US")}`,
@@ -106,7 +111,7 @@ export async function sendBookingTelegramNotification(
     "",
     `Booking: ${booking.bookingId}`,
     `Customer: ${booking.customerName}`,
-    `Phone: ${booking.phone}`,
+    formatPhoneLine(booking.phone),
     `Pickup: ${booking.pickupAddress}`,
     `Dropoff: ${booking.dropoffAddress}`,
     `Time: ${new Date(booking.pickupTime).toLocaleString("en-US")}`,

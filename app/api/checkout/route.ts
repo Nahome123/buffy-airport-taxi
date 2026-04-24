@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       const notificationPayload = {
         bookingId: booking.id,
         customerName: booking.customerName,
-        phone: booking.phone,
+        phone: payload.phone,
         pickupAddress: booking.pickupAddress,
         dropoffAddress: booking.dropoffAddress,
         pickupTime: booking.pickupTime,
