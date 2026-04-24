@@ -28,21 +28,64 @@ const pricingExamples = [
   { label: "25 mile sample", value: 6000 },
 ];
 
-const aboutCards = [
+const serviceCards = [
   {
-    title: "Local airport focus",
+    title: "Airport pickups",
     copy:
-      "Buffy Airport Taxi is positioned as a simple local transfer service for airport pickups, drop-offs, and scheduled rides across Buffalo and the surrounding area.",
+      "Reserve reliable transportation to or from Buffalo Niagara International Airport with clear pricing and direct scheduling.",
   },
   {
-    title: "Straightforward booking",
+    title: "Niagara Falls rides",
     copy:
-      "The experience is designed to feel direct and low-friction: riders enter the trip details, review pricing, and continue to secure checkout without extra steps.",
+      "Book point-to-point service between Buffalo, Niagara Falls, hotels, and nearby destinations without back-and-forth calls.",
   },
   {
-    title: "Dispatch-ready workflow",
+    title: "Scheduled transfers",
     copy:
-      "Behind the scenes, the booking flow is built to support private admin access, payment confirmation, and future trip assignment as the service grows.",
+      "Set your pickup time in advance so airport departures, arrivals, and longer-distance rides are already arranged when you need them.",
+  },
+];
+
+const trustHighlights = [
+  "Route-based pricing with live mileage estimates",
+  "Card or cash options after dispatcher approval",
+  "Buffalo and Niagara Falls coverage",
+  "Private dispatch review before every trip",
+];
+
+const processSteps = [
+  {
+    title: "Share your trip",
+    copy:
+      "Enter pickup, dropoff, date, passenger count, and contact information directly on the booking form.",
+  },
+  {
+    title: "Get approved",
+    copy:
+      "Your trip request is reviewed through dispatch so every ride is confirmed before payment or final booking.",
+  },
+  {
+    title: "Ride with confidence",
+    copy:
+      "After approval, card riders continue to checkout and cash riders receive a confirmed reservation with payment due later.",
+  },
+];
+
+const coverageCards = [
+  {
+    title: "Primary service area",
+    copy:
+      "Buffalo, Amherst, Cheektowaga, Williamsville, downtown hotels, and Buffalo Niagara International Airport.",
+  },
+  {
+    title: "Popular transfer route",
+    copy:
+      "Direct rides between Buffalo and Niagara Falls for visitors, airport arrivals, and hotel transfers.",
+  },
+  {
+    title: "Best fit",
+    copy:
+      "Airport transportation, hotel pickups, scheduled departures, and simple private rides across the region.",
   },
 ];
 
@@ -145,21 +188,21 @@ export default function Home() {
                   </span>
                 </h1>
                 <p className="mt-6 max-w-lg text-base leading-7 text-slate-200 sm:text-lg">
-                  Book airport rides with live route pricing, quick checkout,
-                  and a cleaner dispatch workflow built to feel local and
-                  premium at the same time.
+                  Professional airport transportation for Buffalo and Niagara
+                  Falls with transparent pricing, scheduled pickups, and a
+                  smoother booking experience from first request to final ride.
                 </p>
               </div>
 
               <div className="hero-copy-panel mt-8 rounded-[1.8rem] border border-white/10 bg-black/18 p-5">
                 <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--color-gold)]">
-                  Service Snapshot
+                  Why Riders Choose Buffy
                 </p>
-                <p className="mt-3 text-sm leading-7 text-slate-100/88">
-                  Route-based pricing, airport-focused bookings, and a private
-                  admin flow designed for real dispatch use once the service is
-                  live.
-                </p>
+                <div className="mt-3 grid gap-2 text-sm leading-7 text-slate-100/88">
+                  {trustHighlights.map((highlight) => (
+                    <p key={highlight}>{highlight}</p>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -192,16 +235,21 @@ export default function Home() {
             <div className="flex flex-col gap-4 border-b border-white/10 pb-6 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="text-sm uppercase tracking-[0.28em] text-[color:var(--color-gold)]">
-                  About Buffy
+                  Services
                 </p>
                 <h2 className="mt-3 text-3xl font-semibold text-white">
-                  A clean airport-transfer brand with room to grow
+                  Built for airport transfers, hotel pickups, and regional rides
                 </h2>
               </div>
+              <p className="max-w-2xl text-sm leading-7 text-slate-200/82">
+                Buffy Airport Taxi is designed for travelers who want a simpler,
+                more direct way to reserve private transportation around Buffalo
+                and Niagara Falls.
+              </p>
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {aboutCards.map((card) => (
+              {serviceCards.map((card) => (
                 <article
                   key={card.title}
                   className="rounded-[1.8rem] border border-white/10 bg-black/16 p-5 backdrop-blur-sm"
@@ -214,6 +262,61 @@ export default function Home() {
                   </p>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="animate-rise-delay pb-10">
+          <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="buffalo-card rounded-[2.3rem] border border-white/10 p-6 sm:p-8">
+              <p className="text-sm uppercase tracking-[0.28em] text-[color:var(--color-gold)]">
+                How It Works
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold text-white">
+                Simple steps from trip request to confirmed ride
+              </h2>
+              <div className="mt-6 space-y-4">
+                {processSteps.map((step, index) => (
+                  <article
+                    key={step.title}
+                    className="rounded-[1.7rem] border border-white/10 bg-black/16 p-5"
+                  >
+                    <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--color-gold)]">
+                      Step {index + 1}
+                    </p>
+                    <h3 className="mt-3 text-xl font-semibold text-white">
+                      {step.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-7 text-slate-100/84">
+                      {step.copy}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div className="buffalo-card rounded-[2.3rem] border border-white/10 p-6 sm:p-8">
+              <p className="text-sm uppercase tracking-[0.28em] text-[color:var(--color-gold)]">
+                Service Area
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold text-white">
+                Local coverage with popular Buffalo and Falls routes in mind
+              </h2>
+              <div className="mt-6 grid gap-4">
+                {coverageCards.map((card) => (
+                  <article
+                    key={card.title}
+                    className="rounded-[1.7rem] border border-white/10 bg-black/16 p-5"
+                  >
+                    <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--color-gold)]">
+                      {card.title}
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-slate-100/84">
+                      {card.copy}
+                    </p>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>
