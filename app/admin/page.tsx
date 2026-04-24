@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import { addDriver, assignDriverToBooking, logoutAdmin } from "@/app/admin/actions";
+import {
+  addDriver,
+  assignDriverToBooking,
+  deleteBooking,
+  logoutAdmin,
+} from "@/app/admin/actions";
 import { getAdminDashboardData } from "@/lib/admin-dashboard";
 import { formatCurrencyFromCents, formatPickupDate } from "@/lib/format";
 import { requireAdminSession } from "@/lib/admin-auth";
@@ -196,6 +201,16 @@ export default async function AdminPage() {
                             className="w-full rounded-[1rem] border border-[#d7b89e] bg-[linear-gradient(135deg,#d9875c,#b6461e)] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-105"
                           >
                             Save Assignment
+                          </button>
+                        </form>
+
+                        <form action={deleteBooking}>
+                          <input type="hidden" name="bookingId" value={booking.id} />
+                          <button
+                            type="submit"
+                            className="w-full rounded-[1rem] border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100"
+                          >
+                            Delete Trip
                           </button>
                         </form>
                       </div>

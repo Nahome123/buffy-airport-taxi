@@ -29,6 +29,10 @@ const assignDriverSchema = z.object({
   driverId: z.string().trim().optional(),
 });
 
+const deleteBookingSchema = z.object({
+  bookingId: z.string().trim().min(1),
+});
+
 export type AdminLoginState =
   | {
       error?: string;
@@ -134,6 +138,26 @@ export async function assignDriverToBooking(formData: FormData) {
     data: {
       assignedDriverId: driverId,
       assignedAt: driverId ? new Date() : null,
+    },
+  });
+
+  revalidatePath("/admin");
+}
+
+export async function deleteBooking(formData: FormData) {
+  await requireAdminSession();
+
+  const parsed = deleteBookingSchema.safeParse({
+    bookingId: formData.get("bookingId"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Could not read the booking to delete.");
+  }
+
+  await prisma.booking.delete({
+    where: {
+      id: parsed.data.bookingId,
     },
   });
 
