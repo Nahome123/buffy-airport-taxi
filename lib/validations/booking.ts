@@ -13,7 +13,7 @@ export const bookingPayloadSchema = z.object({
     .number()
     .int("Passengers must be a whole number.")
     .min(1, "At least one passenger is required.")
-    .max(8, "Passenger count is too high for a standard booking."),
+    .max(3, "Passenger count is limited to 3 for a standard booking."),
   luggage: z.coerce
     .number()
     .int("Luggage must be a whole number.")

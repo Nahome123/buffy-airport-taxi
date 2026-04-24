@@ -858,7 +858,7 @@ export function BookingForm() {
               name="passengers"
               type="number"
               min={1}
-              max={8}
+              max={3}
               required
               value={formValues.passengers}
               onChange={(event) =>
