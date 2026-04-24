@@ -58,6 +58,9 @@ export const metadata: Metadata = {
       "Book Buffalo airport transfers with live route pricing and flexible payment options.",
     images: ["/buffalo-waterfront.svg"],
   },
+  verification: {
+    google: "9CbLO-eZnVzN25VyKY8pIaVgVwzkxRn6pRlXRh4V8QE",
+  },
 };
 
 export default function RootLayout({
