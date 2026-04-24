@@ -7,8 +7,10 @@ import {
   assignDriverToBooking,
   deleteBooking,
   logoutAdmin,
+  updateFareRate,
 } from "@/app/admin/actions";
 import { getAdminDashboardData } from "@/lib/admin-dashboard";
+import { formatFareRateLabel, getFareSettings } from "@/lib/fare-settings";
 import { formatCurrencyFromCents, formatPickupDate } from "@/lib/format";
 import { requireAdminSession } from "@/lib/admin-auth";
 
@@ -28,6 +30,7 @@ export default async function AdminPage() {
   await requireAdminSession();
 
   const { bookings, drivers, schemaReady } = await getAdminDashboardData();
+  const fareSettings = await getFareSettings();
   const todaysTrips = bookings.filter((booking) => {
     const today = new Date();
     return (
@@ -274,21 +277,42 @@ export default async function AdminPage() {
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-accent)]">
                     Fare rate control
                   </p>
-                  <div className="mt-3 flex items-center gap-3">
-                    <input
-                      type="text"
-                      value="$1.30"
-                      readOnly
-                      className="w-full rounded-[1rem] border border-[#ddcbbb] bg-white px-4 py-3 text-base font-semibold text-slate-900 outline-none"
-                    />
-                    <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber-800">
-                      Placeholder
-                    </span>
-                  </div>
+                  <form action={updateFareRate} className="mt-3 space-y-3">
+                    <label className="block text-sm font-medium text-slate-700">
+                      Rate per mile
+                      <div className="mt-2 flex items-center gap-3">
+                        <input
+                          type="number"
+                          name="fareRatePerMile"
+                          min="0.50"
+                          max="25"
+                          step="0.05"
+                          defaultValue={(
+                            fareSettings.fareRatePerMileCents / 100
+                          ).toFixed(2)}
+                          className="w-full rounded-[1rem] border border-[#ddcbbb] bg-white px-4 py-3 text-base font-semibold text-slate-900 outline-none focus:border-[var(--color-accent)]"
+                        />
+                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-800">
+                          Live
+                        </span>
+                      </div>
+                    </label>
+                    <button
+                      type="submit"
+                      className="w-full rounded-[1rem] border border-[#d7b89e] bg-[linear-gradient(135deg,#d9875c,#b6461e)] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-105"
+                    >
+                      Update Fare Rate
+                    </button>
+                  </form>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Reserved space for a future dispatch fare-rate override.
-                    Current booking calculations still use the live app pricing
-                    logic, not this admin placeholder yet.
+                    The current dispatch rate is{" "}
+                    <span className="font-semibold text-slate-900">
+                      {formatFareRateLabel(fareSettings.fareRatePerMileCents)} per mile
+                    </span>
+                    . New fare estimates and new bookings will use this rate.
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    The initiation fee stays fixed at {formatCurrencyFromCents(500)}.
                   </p>
                 </div>
               </div>

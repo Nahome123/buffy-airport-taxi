@@ -72,3 +72,10 @@ model Driver {
 
   bookings Booking[]
 }
+
+model DispatchSettings {
+  id                   String   @id @default("default")
+  fareRatePerMileCents Int      @default(130)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}

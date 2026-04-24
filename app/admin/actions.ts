@@ -11,6 +11,7 @@ import {
   requireAdminSession,
 } from "@/lib/admin-auth";
 import { getAdminDashboardData } from "@/lib/admin-dashboard";
+import { getFareSettings, hasDispatchSettingsTable } from "@/lib/fare-settings";
 import { prisma } from "@/lib/prisma";
 
 const loginSchema = z.object({
@@ -31,6 +32,14 @@ const assignDriverSchema = z.object({
 
 const deleteBookingSchema = z.object({
   bookingId: z.string().trim().min(1),
+});
+
+const updateFareRateSchema = z.object({
+  fareRatePerMile: z.coerce
+    .number()
+    .finite()
+    .min(0.5, "Fare rate must be at least $0.50 per mile.")
+    .max(25, "Fare rate must be $25.00 per mile or less."),
 });
 
 export type AdminLoginState =
@@ -158,6 +167,38 @@ export async function deleteBooking(formData: FormData) {
   await prisma.booking.delete({
     where: {
       id: parsed.data.bookingId,
+    },
+  });
+
+  revalidatePath("/admin");
+}
+
+export async function updateFareRate(formData: FormData) {
+  await requireAdminSession();
+
+  if (!(await hasDispatchSettingsTable())) {
+    throw new Error("Run the latest Prisma migration before updating the fare rate.");
+  }
+
+  const parsed = updateFareRateSchema.safeParse({
+    fareRatePerMile: formData.get("fareRatePerMile"),
+  });
+
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0]?.message ?? "Invalid fare rate.");
+  }
+
+  const cents = Math.round(parsed.data.fareRatePerMile * 100);
+  const currentSettings = await getFareSettings();
+
+  await prisma.dispatchSettings.upsert({
+    where: { id: "default" },
+    update: {
+      fareRatePerMileCents: cents,
+    },
+    create: {
+      id: "default",
+      fareRatePerMileCents: cents || currentSettings.fareRatePerMileCents,
     },
   });
 

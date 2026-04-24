@@ -1,10 +1,9 @@
 import "server-only";
 
 import { getMapboxAccessToken } from "@/lib/env";
+import { getFareSettings } from "@/lib/fare-settings";
 
 const METERS_PER_MILE = 1609.344;
-const BASE_FARE_CENTS = 1000;
-const CENTS_PER_MILE = 200;
 
 type GeocodingResponse = {
   features?: Array<{
@@ -115,6 +114,7 @@ export async function getMileageEstimate(
   dropoffAddress: string,
 ) {
   const token = getRoutingToken();
+  const fareSettings = await getFareSettings();
   const [pickupCoordinates, dropoffCoordinates] = await Promise.all([
     geocodeAddress(pickupAddress),
     geocodeAddress(dropoffAddress),
@@ -148,7 +148,9 @@ export async function getMileageEstimate(
   }
 
   const distanceMiles = distanceMeters / METERS_PER_MILE;
-  const fareCents = BASE_FARE_CENTS + Math.round(distanceMiles * CENTS_PER_MILE);
+  const fareCents =
+    fareSettings.baseFareCents +
+    Math.round(distanceMiles * fareSettings.fareRatePerMileCents);
   const overlays = [
     routeGeometry
       ? `path-5+8b4513-0.75(${encodeURIComponent(routeGeometry)})`
