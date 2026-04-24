@@ -49,8 +49,18 @@ export function BookingForm() {
     "Enter pickup and dropoff addresses to calculate mileage.",
   );
   const [isEstimating, setIsEstimating] = useState(false);
+  const [isLoadingPickupSuggestions, setIsLoadingPickupSuggestions] =
+    useState(false);
+  const [isLoadingDropoffSuggestions, setIsLoadingDropoffSuggestions] =
+    useState(false);
   const pickupFieldRef = useRef<HTMLDivElement | null>(null);
   const dropoffFieldRef = useRef<HTMLDivElement | null>(null);
+  const suggestionCacheRef = useRef<Map<string, AddressSuggestion[]>>(new Map());
+  const pickupRequestRef = useRef(0);
+  const dropoffRequestRef = useRef(0);
+  const suppressNextSuggestionFetchRef = useRef<
+    Partial<Record<"pickupAddress" | "dropoffAddress", string>>
+  >({});
 
   useEffect(() => {
     const pickupAddress = formValues.pickupAddress.trim();
@@ -133,8 +143,25 @@ export function BookingForm() {
       return;
     }
 
+    if (suppressNextSuggestionFetchRef.current.pickupAddress === query) {
+      suppressNextSuggestionFetchRef.current.pickupAddress = undefined;
+      setIsLoadingPickupSuggestions(false);
+      return;
+    }
+
+    const cachedSuggestions = suggestionCacheRef.current.get(`pickup:${query}`);
+
+    if (cachedSuggestions) {
+      setPickupSuggestions(cachedSuggestions);
+      setIsLoadingPickupSuggestions(false);
+      return;
+    }
+
     const controller = new AbortController();
+    const requestId = ++pickupRequestRef.current;
     const timeout = window.setTimeout(async () => {
+      setIsLoadingPickupSuggestions(true);
+
       try {
         const response = await fetch("/api/address-suggestions", {
           method: "POST",
@@ -149,10 +176,24 @@ export function BookingForm() {
           suggestions?: AddressSuggestion[];
         };
 
-        setPickupSuggestions(result.suggestions ?? []);
+        if (pickupRequestRef.current !== requestId) {
+          return;
+        }
+
+        const nextSuggestions = result.suggestions ?? [];
+        suggestionCacheRef.current.set(`pickup:${query}`, nextSuggestions);
+        setPickupSuggestions(nextSuggestions);
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
+          if (pickupRequestRef.current !== requestId) {
+            return;
+          }
+
           setPickupSuggestions([]);
+        }
+      } finally {
+        if (pickupRequestRef.current === requestId) {
+          setIsLoadingPickupSuggestions(false);
         }
       }
     }, 250);
@@ -170,8 +211,25 @@ export function BookingForm() {
       return;
     }
 
+    if (suppressNextSuggestionFetchRef.current.dropoffAddress === query) {
+      suppressNextSuggestionFetchRef.current.dropoffAddress = undefined;
+      setIsLoadingDropoffSuggestions(false);
+      return;
+    }
+
+    const cachedSuggestions = suggestionCacheRef.current.get(`dropoff:${query}`);
+
+    if (cachedSuggestions) {
+      setDropoffSuggestions(cachedSuggestions);
+      setIsLoadingDropoffSuggestions(false);
+      return;
+    }
+
     const controller = new AbortController();
+    const requestId = ++dropoffRequestRef.current;
     const timeout = window.setTimeout(async () => {
+      setIsLoadingDropoffSuggestions(true);
+
       try {
         const response = await fetch("/api/address-suggestions", {
           method: "POST",
@@ -186,10 +244,24 @@ export function BookingForm() {
           suggestions?: AddressSuggestion[];
         };
 
-        setDropoffSuggestions(result.suggestions ?? []);
+        if (dropoffRequestRef.current !== requestId) {
+          return;
+        }
+
+        const nextSuggestions = result.suggestions ?? [];
+        suggestionCacheRef.current.set(`dropoff:${query}`, nextSuggestions);
+        setDropoffSuggestions(nextSuggestions);
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
+          if (dropoffRequestRef.current !== requestId) {
+            return;
+          }
+
           setDropoffSuggestions([]);
+        }
+      } finally {
+        if (dropoffRequestRef.current === requestId) {
+          setIsLoadingDropoffSuggestions(false);
         }
       }
     }, 250);
@@ -286,10 +358,12 @@ export function BookingForm() {
 
       if (name === "pickupAddress" && value.trim().length < 3) {
         setPickupSuggestions([]);
+        setIsLoadingPickupSuggestions(false);
       }
 
       if (name === "dropoffAddress" && value.trim().length < 3) {
         setDropoffSuggestions([]);
+        setIsLoadingDropoffSuggestions(false);
       }
 
       if (
@@ -317,6 +391,7 @@ export function BookingForm() {
     field: "pickupAddress" | "dropoffAddress",
     value: string,
   ) {
+    suppressNextSuggestionFetchRef.current[field] = value.trim();
     onFieldChange(field, value);
 
     if (field === "pickupAddress") {
@@ -629,12 +704,18 @@ export function BookingForm() {
                 onFieldChange("pickupAddress", event.target.value)
               }
             />
+            {isLoadingPickupSuggestions ? (
+              <div className="pointer-events-none absolute right-4 top-5 text-xs text-[var(--color-copy-muted)]">
+                Searching...
+              </div>
+            ) : null}
             {pickupAddressSuggestions.length > 0 ? (
               <div className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-[1.1rem] border border-[#e2cfbd] bg-[#fffaf3] shadow-[0_18px_32px_rgba(43,28,16,0.14)]">
                 {pickupAddressSuggestions.map((suggestion, index) => (
                   <button
                     key={suggestion.id}
                     type="button"
+                    onMouseDown={(event) => event.preventDefault()}
                     onMouseEnter={() => {
                       setActiveField("pickupAddress");
                       setActiveSuggestionIndex(index);
@@ -679,12 +760,18 @@ export function BookingForm() {
                 onFieldChange("dropoffAddress", event.target.value)
               }
             />
+            {isLoadingDropoffSuggestions ? (
+              <div className="pointer-events-none absolute right-4 top-5 text-xs text-[var(--color-copy-muted)]">
+                Searching...
+              </div>
+            ) : null}
             {dropoffAddressSuggestions.length > 0 ? (
               <div className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-[1.1rem] border border-[#e2cfbd] bg-[#fffaf3] shadow-[0_18px_32px_rgba(43,28,16,0.14)]">
                 {dropoffAddressSuggestions.map((suggestion, index) => (
                   <button
                     key={suggestion.id}
                     type="button"
+                    onMouseDown={(event) => event.preventDefault()}
                     onMouseEnter={() => {
                       setActiveField("dropoffAddress");
                       setActiveSuggestionIndex(index);
