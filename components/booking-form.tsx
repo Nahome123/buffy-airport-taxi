@@ -435,7 +435,7 @@ export function BookingForm() {
 
   return (
     <section className="panel h-full rounded-[2.25rem] border border-[#e8d8c5] p-6 sm:p-8">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--color-accent)]">
             Reserve Your Ride
@@ -443,12 +443,12 @@ export function BookingForm() {
           <h2 className="mt-3 text-2xl font-semibold text-[var(--color-copy)]">
             Buffalo pickup planning with dispatcher approval built in
           </h2>
-          <p className="mt-3 max-w-lg text-sm leading-6 text-[var(--color-copy-muted)]">
+          <p className="mt-3 text-sm leading-6 text-[var(--color-copy-muted)] sm:max-w-lg">
             Share the rider details and we will route the booking into a clean
             approval flow before payment or cash confirmation moves forward.
           </p>
         </div>
-        <div className="rounded-[1.5rem] border border-[#ecd8c5] bg-[linear-gradient(180deg,#fff7ed,#f5e4d7)] px-4 py-3 text-right">
+        <div className="rounded-[1.5rem] border border-[#ecd8c5] bg-[linear-gradient(180deg,#fff7ed,#f5e4d7)] px-4 py-3 text-left sm:text-right">
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--color-accent)]">
             Estimated Fare
           </p>
