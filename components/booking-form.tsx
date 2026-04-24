@@ -14,6 +14,10 @@ import { formatCurrencyFromCents } from "@/lib/format";
 
 type BookingFieldErrors = Partial<Record<string, string[]>>;
 type AddressSuggestion = { id: string; label: string };
+type FareSettingsResponse = {
+  baseFareCents: number;
+  fareRatePerMileCents: number;
+};
 
 const airportQuickPicks = [
   "Buffalo Niagara International Airport (BUF), Buffalo, NY",
@@ -40,6 +44,8 @@ export function BookingForm() {
   const [estimatedFare, setEstimatedFare] = useState<number | null>(null);
   const [estimatedMiles, setEstimatedMiles] = useState<number | null>(null);
   const [estimatedMinutes, setEstimatedMinutes] = useState<number | null>(null);
+  const [baseFareCents, setBaseFareCents] = useState(500);
+  const [fareRatePerMileCents, setFareRatePerMileCents] = useState(130);
   const [routeMapUrl, setRouteMapUrl] = useState<string | null>(null);
   const [pickupSuggestions, setPickupSuggestions] = useState<AddressSuggestion[]>([]);
   const [dropoffSuggestions, setDropoffSuggestions] = useState<AddressSuggestion[]>([]);
@@ -61,6 +67,42 @@ export function BookingForm() {
   const suppressNextSuggestionFetchRef = useRef<
     Partial<Record<"pickupAddress" | "dropoffAddress", string>>
   >({});
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadFareSettings() {
+      try {
+        const response = await fetch("/api/fare-estimate", {
+          method: "GET",
+        });
+
+        const result = (await response.json()) as
+          | FareSettingsResponse
+          | { error: string };
+
+        if (
+          isCancelled ||
+          !response.ok ||
+          !("fareRatePerMileCents" in result) ||
+          !("baseFareCents" in result)
+        ) {
+          return;
+        }
+
+        setBaseFareCents(result.baseFareCents);
+        setFareRatePerMileCents(result.fareRatePerMileCents);
+      } catch {
+        // Keep client defaults when the fare settings request is unavailable.
+      }
+    }
+
+    void loadFareSettings();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const pickupAddress = formValues.pickupAddress.trim();
@@ -94,6 +136,8 @@ export function BookingForm() {
               distanceMiles: number;
               durationMinutes: number | null;
               staticMapUrl: string;
+              baseFareCents: number;
+              fareRatePerMileCents: number;
             }
           | { error: string };
 
@@ -111,6 +155,8 @@ export function BookingForm() {
         setEstimatedFare(result.fareCents);
         setEstimatedMiles(result.distanceMiles);
         setEstimatedMinutes(result.durationMinutes);
+        setBaseFareCents(result.baseFareCents);
+        setFareRatePerMileCents(result.fareRatePerMileCents);
         setRouteMapUrl(result.staticMapUrl);
         setEstimateMessage(null);
       } catch (error) {
@@ -507,6 +553,8 @@ export function BookingForm() {
     "mt-2 w-full rounded-[1.35rem] border border-[var(--color-line)] bg-[#fffaf3] px-4 py-3 text-sm text-[var(--color-copy)] outline-none transition placeholder:text-[#8e7d6d] focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[#f3d7c8]";
   const pickupAddressSuggestions = getSuggestionsForField("pickupAddress");
   const dropoffAddressSuggestions = getSuggestionsForField("dropoffAddress");
+  const formattedRate = `$${(fareRatePerMileCents / 100).toFixed(2)}`;
+  const formattedBaseFare = formatCurrencyFromCents(baseFareCents);
 
   return (
     <section className="panel h-full rounded-[2.25rem] border border-[#e8d8c5] p-6 sm:p-8">
@@ -534,7 +582,7 @@ export function BookingForm() {
           </p>
           <p className="mt-2 text-xs text-[var(--color-copy-muted)]">
             {estimatedMiles !== null
-              ? `${estimatedMiles.toFixed(1)} miles at $2.00 per mile + $10 base`
+              ? `${estimatedMiles.toFixed(1)} miles at ${formattedRate} per mile + ${formattedBaseFare} base`
               : isEstimating
                 ? "Calculating mileage..."
                 : "Distance estimate pending"}
@@ -923,9 +971,10 @@ export function BookingForm() {
             </p>
             <p className="mt-2 leading-6">
               Server pricing uses route distance. Once both addresses are
-              entered, the estimate uses live driving mileage, charges $2.00
-              per mile, adds a $10.00 initial fee, and then waits for dispatch
-              approval before the next step opens.
+              entered, the estimate uses live driving mileage, charges{" "}
+              {formattedRate} per mile, adds a {formattedBaseFare} initial
+              fee, and then waits for dispatch approval before the next step
+              opens.
             </p>
           </div>
           <div className="rounded-[1.4rem] border border-white/60 bg-white/60 p-4">
