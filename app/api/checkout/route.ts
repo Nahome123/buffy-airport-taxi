@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAppUrl } from "@/lib/env";
 import {
+  sendBookingTelegramLeadNotification,
   sendBookingTelegramNotification,
   sendBookingWhatsAppNotification,
 } from "@/lib/notifications";
@@ -51,6 +52,25 @@ export async function POST(request: Request) {
     });
 
     const appUrl = getAppUrl();
+
+    if (payload.paymentMethod === "card") {
+      try {
+        await sendBookingTelegramLeadNotification({
+          bookingId: booking.id,
+          customerName: booking.customerName,
+          phone: payload.phone,
+          pickupAddress: booking.pickupAddress,
+          dropoffAddress: booking.dropoffAddress,
+          pickupTime: booking.pickupTime,
+          passengers: booking.passengers,
+          luggage: booking.luggage,
+          fareTotal: booking.fareTotal,
+          paymentLabel: "Checkout started, payment not yet completed",
+        });
+      } catch (error) {
+        console.error("Telegram lead notification failed", error);
+      }
+    }
 
     if (payload.paymentMethod === "cash") {
       await prisma.payment.create({

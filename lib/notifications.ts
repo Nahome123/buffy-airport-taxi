@@ -140,3 +140,52 @@ export async function sendBookingTelegramNotification(
     throw new Error(`Telegram notification failed: ${errorText}`);
   }
 }
+
+export async function sendBookingTelegramLeadNotification(
+  booking: BookingNotificationInput,
+) {
+  if (!isTelegramConfigured()) {
+    return;
+  }
+
+  const botToken = getTelegramBotToken();
+  const chatId = getTelegramChatId();
+
+  if (!botToken || !chatId) {
+    return;
+  }
+
+  const text = [
+    "New Buffy Airport Taxi booking started",
+    "",
+    `Booking: ${booking.bookingId}`,
+    `Customer: ${booking.customerName}`,
+    formatPhoneLine(booking.phone),
+    `Pickup: ${booking.pickupAddress}`,
+    `Dropoff: ${booking.dropoffAddress}`,
+    `Time: ${new Date(booking.pickupTime).toLocaleString("en-US")}`,
+    `Passengers: ${booking.passengers}`,
+    `Luggage: ${booking.luggage}`,
+    `Estimated Fare: $${(booking.fareTotal / 100).toFixed(2)}`,
+    `Payment: ${booking.paymentLabel ?? "Checkout started"}`,
+  ].join("\n");
+
+  const response = await fetch(
+    `https://api.telegram.org/bot${botToken}/sendMessage`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Telegram lead notification failed: ${errorText}`);
+  }
+}
