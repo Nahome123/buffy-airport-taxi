@@ -28,6 +28,18 @@ export default async function AdminPage() {
   await requireAdminSession();
 
   const { bookings, drivers, schemaReady } = await getAdminDashboardData();
+  const todaysTrips = bookings.filter((booking) => {
+    const today = new Date();
+    return (
+      booking.pickupTime.getDate() === today.getDate() &&
+      booking.pickupTime.getMonth() === today.getMonth() &&
+      booking.pickupTime.getFullYear() === today.getFullYear()
+    );
+  }).length;
+  const awaitingApprovalTrips = bookings.filter(
+    (booking) => booking.status === "AWAITING_APPROVAL",
+  ).length;
+  const unassignedTrips = bookings.filter((booking) => !booking.assignedDriverId).length;
 
   const paidRevenue = bookings
     .flatMap((booking) => booking.payments)
@@ -87,6 +99,12 @@ export default async function AdminPage() {
 
         <div className="mt-8 grid gap-4 sm:grid-cols-4">
           <StatCard label="Total bookings" value={String(bookings.length)} />
+          <StatCard label="Trips today" value={String(todaysTrips)} />
+          <StatCard label="Awaiting approval" value={String(awaitingApprovalTrips)} />
+          <StatCard label="Unassigned trips" value={String(unassignedTrips)} />
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <StatCard label="Assigned trips" value={String(assignedTrips)} />
           <StatCard label="Active drivers" value={String(activeDrivers)} />
           <StatCard label="Revenue" value={formatCurrencyFromCents(paidRevenue)} />
@@ -222,6 +240,60 @@ export default async function AdminPage() {
           </section>
 
           <aside className="space-y-4">
+            <section className="panel rounded-[1.9rem] border border-[#ead8c8] p-5">
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--color-accent)]">
+                Dispatch Controls
+              </p>
+              <h2 className="mt-3 text-xl font-semibold text-slate-950">
+                Operational snapshot
+              </h2>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                <div className="rounded-[1.3rem] border border-[#ead8c8] bg-[#fbf4ec] p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-accent)]">
+                    Approval queue
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-slate-950">
+                    {awaitingApprovalTrips}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Trips still waiting for a Telegram approval or rejection.
+                  </p>
+                </div>
+                <div className="rounded-[1.3rem] border border-[#ead8c8] bg-[#fbf4ec] p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-accent)]">
+                    Dispatch gaps
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-slate-950">
+                    {unassignedTrips}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    Bookings that still need a driver assignment on the board.
+                  </p>
+                </div>
+                <div className="rounded-[1.3rem] border border-[#ead8c8] bg-[#fbf4ec] p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-accent)]">
+                    Fare rate control
+                  </p>
+                  <div className="mt-3 flex items-center gap-3">
+                    <input
+                      type="text"
+                      value="$1.30"
+                      readOnly
+                      className="w-full rounded-[1rem] border border-[#ddcbbb] bg-white px-4 py-3 text-base font-semibold text-slate-900 outline-none"
+                    />
+                    <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-amber-800">
+                      Placeholder
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Reserved space for a future dispatch fare-rate override.
+                    Current booking calculations still use the live app pricing
+                    logic, not this admin placeholder yet.
+                  </p>
+                </div>
+              </div>
+            </section>
+
             <section className="panel rounded-[1.9rem] border border-[#ead8c8] p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--color-accent)]">
                 Add Driver
